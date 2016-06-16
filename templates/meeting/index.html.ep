@@ -1,0 +1,2 @@
+% layout 'default';
+templates/meeting/index.html.ep

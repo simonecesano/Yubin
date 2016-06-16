@@ -4,6 +4,7 @@ use Moose::Role;
 
 use XML::LibXML;
 use XML::Bare qw/xmlin/;
+use Data::Dump qw/dump/;
 
 has 'xpc' => ( is => 'ro', default => sub {
 		  my $xpc = XML::LibXML::XPathContext->new;
@@ -16,7 +17,10 @@ sub xpath {
     my ($self, $xpath, $xml) = @_;
     $xml ||= $self->xml;
     my $dom = XML::LibXML->load_xml(string => $xml);
-    return map { xmlin("$_") } $self->xpc->findnodes($xpath, $dom)
+    
+    return map {
+	xmlin("$_")
+    } $self->xpc->findnodes($xpath, $dom)
 }
 
 sub find {

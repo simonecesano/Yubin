@@ -22,29 +22,21 @@ sub compile {
 
 __DATA__
 __[ get_manager ]__
-<?xml version="1.0" encoding="UTF-8"?>
-<soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/"
-               xmlns:t="http://schemas.microsoft.com/exchange/services/2006/types"
-               xmlns:m="http://schemas.microsoft.com/exchange/services/2006/messages">
-   <soap:Header>
-    <t:RequestServerVersion Version="Exchange2013" />
-   </soap:Header>
-   <soap:Body >
-     <m:FindPeople>
-       <m:PersonaShape>
-        <t:BaseShape>IdOnly</t:BaseShape>
-        <t:AdditionalProperties>
-          <t:FieldURI FieldURI="persona:DisplayName"/>
-          <t:FieldURI FieldURI="persona:Title"/>
-        </t:AdditionalProperties>
-       </m:PersonaShape>
-       <m:IndexedPageItemView BasePoint="Beginning" MaxEntriesReturned="100" Offset="0"/>
-       <m:ParentFolderId>
-         <t:DistinguishedFolderId Id="directory"/>
-       </m:ParentFolderId>
-       <m:QueryString>cesansim</m:QueryString>
-     </m:FindPeople>
-   </soap:Body>
+<?xml version="1.0" encoding="utf-8"?>
+<soap:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	       xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+	       xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/"
+	       xmlns:t="http://schemas.microsoft.com/exchange/services/2006/types">
+  <soap:Header>
+    <t:RequestServerVersion Version="Exchange2013_SP1" />
+  </soap:Header>
+  <soap:Body>
+    <ResolveNames xmlns="http://schemas.microsoft.com/exchange/services/2006/messages"
+                  xmlns:t="http://schemas.microsoft.com/exchange/services/2006/types"
+		  ReturnFullContactData="true" SearchScope="ActiveDirectory" ContactDataShape="AllProperties">
+      <UnresolvedEntry><: $name :></UnresolvedEntry>
+    </ResolveNames>
+  </soap:Body>
 </soap:Envelope>
 __[ get_manager_not_working ]__
 <?xml version="1.0" encoding="UTF-8"?>
@@ -161,3 +153,27 @@ __[ send_mail ]__
     </m:CreateItem>
   </soap:Body>
 </soap:Envelope>
+__[ get_item ]__
+<?xml version="1.0" encoding="utf-8"?>
+<soap:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+               xmlns:m="http://schemas.microsoft.com/exchange/services/2006/messages" 
+               xmlns:t="http://schemas.microsoft.com/exchange/services/2006/types" 
+               xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
+  <soap:Header>
+    <t:RequestServerVersion Version="Exchange2007_SP1" />
+    </soap:Header>
+  <soap:Body>
+    <m:GetItem>
+      <m:ItemShape>
+        <t:BaseShape>IdOnly</t:BaseShape>
+        <t:AdditionalProperties>
+          <t:FieldURI FieldURI="item:Subject" />
+        </t:AdditionalProperties>
+      </m:ItemShape>
+      <m:ItemIds>
+        <t:ItemId Id="<: $id :>" />
+      </m:ItemIds>
+    </m:GetItem>
+  </soap:Body>
+</soap:Envelope>
+

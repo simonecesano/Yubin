@@ -1,0 +1,123 @@
+% layout 'default';
+<script>
+  $(function(){
+      $('td.id').hide()
+      var deferreds = $('td.subject').map(function(i, e){
+	  var id = $(e).data('id');
+	  return $.post('/responses/',
+		 { 'item': id },
+		 function(d){
+		     d = _.chain(d.responses)
+		     // summary output to page
+		     $(e).parent().find('.invited').html(d.size().value());
+		     _(['accept', 'decline', 'unknown', 'tentative']).each(function(s){
+			 var c = d.filter(function(i) { return i['t:ResponseType'].toLowerCase() == s; }).size().value();
+			 $(e).parent().find('td.' + s.toLowerCase()).html(c);
+		     });
+		 })
+      });
+      $.when.apply($, deferreds).then(function(){
+	  var p = {};
+	  var meeting_count = $('td.subject').size();
+	  console.log(meeting_count);
+	  var a = meeting_count > 1 ? _.map(Array.from(arguments), function(i){ return i[0] }) : [ arguments[0] ];
+	  // console.log(a);
+	  _.each(a, function(i){
+	      var id = i.id;
+	      _.each(i.responses, function(r){
+		  p[r['t:Mailbox']['t:EmailAddress']] = p[r['t:Mailbox']['t:EmailAddress']] || { responses: { accept: [], decline: [], unknown: [], tentative: [] }, name: '' };
+		  p[r['t:Mailbox']['t:EmailAddress']]['responses'][r['t:ResponseType'].toLowerCase()].push(id);
+		  p[r['t:Mailbox']['t:EmailAddress']]['name'] = r['t:Mailbox']['t:Name'];
+	      });
+	  });
+	  p = _.keys(p).map(function(i){ var o = p[i]; o['email'] = i; return o; });
+	  var people = {
+	      accept: p.filter(function(i) { return i.responses.accept.length > 0 }),
+	      tentative: p.filter(function(i) { return i.responses.tentative.length > 0 }),
+	      decline: p.filter(function(i) { return i.responses.length == meeting_count }),
+	      unknown: p.filter(function(i) { return i.responses.unknown.length > 0 && i.responses.accept.length == 0  && i.responses.tentative.length == 0 })
+	  }
+	  _.each(_.keys(people), function(p){
+	      console.log(p);
+	      // $('div.' + p).html(_.map(people[p], function(i){ return i.name }).join('; '));
+	      $('div.' + p).html(_.chain(people[p]).map(function(i){ return i.name }).join('; ').value() || 'none' );
+	  })
+      })
+  })
+</script>
+<div class="col-lg-10 col-xs-offset-1"><h1 class="page-header">Meeting overview</h1></div>
+<div class="col-lg-8 col-xs-offset-2">
+  <ul class="nav nav-tabs">
+    <li role="presentation" class="nav active"><a  data-toggle="tab" href="#summary">Summary</a></li>
+    <li role="presentation" class="nav"><a  data-toggle="tab" href="#people">People</a></li>
+  </ul>
+  <div class="tab-content">
+    <div class="tab-pane active" id="summary">
+      <form>
+      <table class="table">
+	<tr>
+	  <td>subject</td>
+	  <td>date</td>
+	  <td><i class="fa fa-users" aria-hidden="true"></i></td>
+	  <td><i class="fa fa-check" aria-hidden="true"></i></td>
+	  <td><i class="fa fa-times" aria-hidden="true"></i></td>
+	  <td><i class="fa fa-question" aria-hidden="true"></i></td>
+	  <td><i class="fa fa-circle-o" aria-hidden="true"></i></td>
+	  % if (scalar @$meetings > 1) {
+	  <td><input type="checkbox" value=""></td>
+	  % }
+	  
+	  % for my $i (@$meetings) {
+	<tr>
+	  <td data-id="<%= $i->{id} %>" class="subject"><%= $i->{subject} %></td>
+	  <td><%= $i->{start} %></td>
+	  <td class="invited"></td>
+	  <td class="accept"></td>
+	  <td class="decline"></td>
+	  <td class="tentative"></td>
+	  <td class="unknown"></td>
+	  % if (scalar @$meetings > 1) {
+	  <td><input type="checkbox" value=""></td>
+	  % }
+	</tr>
+	% }
+      </table>
+      % if (scalar @$meetings > 1) {
+      <hr>
+      <div class="radio-inline">
+	<label>
+	  <input type="radio" name="optionsRadios" id="optionsRadios1" value="option1" checked>
+	  Overview
+	</label>
+      </div>
+      <div class="radio-inline">
+	<label>
+	  <input type="radio" name="optionsRadios" id="optionsRadios2" value="option2">
+	  Summary
+	</label>
+      </div>
+      % }
+      <hr /> 
+      <button type="submit" class="btn btn-default">Submit</button>
+    </form>
+    </div>
+    <div class="tab-pane" id="people">
+      <h4>Accepted at least one</h4>
+      <div class="accept">
+	<i>none</i>
+      </div>
+      <h4>Tentative on at least one</h4>
+      <div class="tentative">
+	<i>none</i>
+      </div>
+      <h4>Declined all</h4>
+      <div class="decline">
+	<i>none</i>
+      </div>
+      <h4>Unknown</h4>
+      <div class="unknown">
+	<i>none</i>
+      </div>
+    </div>
+  </div>
+</div>

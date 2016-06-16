@@ -1,0 +1,11 @@
+% layout 'default';
+<div class="col-lg-10 col-xs-offset-1"><h1 class="page-header">Search for meeting</h1></div>
+<div class="col-lg-8 col-xs-offset-2">
+  <form>
+  <div class="form-group">
+    <label for="meeting_subject">Meeting subject</label>
+    <input type="text" class="form-control" id="meeting_subject" name="meeting_subject" placeholder="Meeting subject">
+  </div>
+  <button type="submit" class="btn btn-default">Submit</button>
+</form>
+</div>
