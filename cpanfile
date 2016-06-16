@@ -30,5 +30,4 @@ requires "LWP::UserAgent";
 requires "Authen::NTLM";
 requires "HTTP::Request";
 requires "Want";
-requires "Graph";
 
