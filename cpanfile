@@ -1,3 +1,4 @@
+requires "local::lib";
 requires "base";
 requires "namespace::autoclean";
 requires "strict";
