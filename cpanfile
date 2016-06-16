@@ -1,5 +1,5 @@
-requires "local::lib";
 requires "base";
+requires "local::lib";
 requires "namespace::autoclean";
 requires "strict";
 requires "utf8";
