@@ -16,8 +16,6 @@ requires 'Mojolicious::Plugin::AssetPack';
 requires "Mojolicious::Plugin::OAuth2";
 requires "Mojolicious::Plugin::ACME";
 
-requires "Data::Dump";
-requires "Net::Google::Calendar";
 requires "CHI";
 requires "Path::Tiny";
 
