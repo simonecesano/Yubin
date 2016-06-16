@@ -1,0 +1,2 @@
+#!/bin/sh
+./yubin.pl daemon --listen http://*:$PORT
