@@ -9,10 +9,11 @@ has 'tx' => ( is => 'ro', default => sub { Text::Xslate->new() } );
 
 sub compile {
     my ($self, $template, $data) = @_;
+    print STDERR "#1 $template\n";
     if (-f $template) {
 	$template = path($template)->slurp
     } else {
-	print STDERR "$template\n";
+	print STDERR "#2 $template\n";
 	$template = ${__PACKAGE__->section_data($template)}
     };
     my $text = $self->tx->render_string($template, $data);
