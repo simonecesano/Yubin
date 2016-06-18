@@ -1,8 +1,10 @@
 package Yubin::UserAgent::EWS::Requests;
-
 use Moose::Role;
+
+use Sub::Exporter::ForMethods qw( method_installer );
+use Data::Section { installer => method_installer }, -setup;
+
 use Text::Xslate;
-use Data::Section -setup;
 use Path::Tiny;
 
 has 'tx' => ( is => 'ro', default => sub { Text::Xslate->new() } );

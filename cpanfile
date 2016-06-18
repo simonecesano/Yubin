@@ -6,7 +6,7 @@ requires "utf8";
 
 requires "Moose";
 requires "Moose::Role";
-
+requires "Sub::Exporter::ForMethods";
 requires 'Data::Dump';
 
 
