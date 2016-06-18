@@ -12,6 +12,7 @@ sub compile {
     if (-f $template) {
 	$template = path($template)->slurp
     } else {
+	print STDERR "$template\n";
 	$template = ${__PACKAGE__->section_data($template)}
     };
     my $text = $self->tx->render_string($template, $data);
