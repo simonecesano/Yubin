@@ -17,7 +17,7 @@ sub compile {
     } else {
 	print STDERR "#2 $template";
 	print STDERR "#p " . __PACKAGE__;
-	$template = ${$self->section_data($template)};
+	$template = ${__PACKAGE__->section_data($template)};
 	print STDERR "#3 $template";
     };
     my $text = $self->tx->render_string($template, $data);
