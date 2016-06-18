@@ -1,5 +1,5 @@
 % layout 'default';
-<div class="col-lg-10 col-xs-offset-1"><h1 class="page-header">Search for meeting</h1></div>
+<div class="col-lg-8 col-xs-offset-2"><h1 class="page-header">Search for meeting</h1></div>
 <div class="col-lg-8 col-xs-offset-2">
   <form>
   <div class="form-group">
