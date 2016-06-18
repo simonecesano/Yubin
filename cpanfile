@@ -3,8 +3,10 @@ requires "local::lib";
 requires "namespace::autoclean";
 requires "strict";
 requires "utf8";
+
 requires "Moose";
 requires "Moose::Role";
+
 requires 'Data::Dump';
 
 
