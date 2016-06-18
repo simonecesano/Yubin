@@ -19,14 +19,14 @@ sub data_section {
 
 sub compile {
     my ($self, $template, $data) = @_;
-    print STDERR "#1 $template";
+    # print STDERR "#1 $template";
     if (-f $template) {
 	$template = path($template)->slurp
     } else {
-	print STDERR "#2 $template";
-	print STDERR "#p " . __PACKAGE__;
+	# print STDERR "#2 $template";
+	# print STDERR "#p " . __PACKAGE__;
 	$template = $self->data_section($template);
-	print STDERR "#3 $template";
+	# print STDERR "#3 $template";
     };
     my $text = $self->tx->render_string($template, $data);
     return $text;
