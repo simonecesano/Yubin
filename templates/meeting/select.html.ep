@@ -1,7 +1,15 @@
 % layout 'default';
 <script>
   $(function(){
-      $('td.id').hide()
+      var meeting_checked = {};
+      var meeting_count = $('td.subject').size();
+
+      $('td.subject').map(function(i, e){
+	  var id = $(e).data('id');
+	  meeting_checked[id] = meeting_count > 1 ? $(e).parent().find("input:checked").length : 1;
+      });
+      meeting_count = _.chain(_.keys(meeting_checked)).filter(function(i){ return meeting_checked[i] > 0 }).size().value();
+      
       var deferreds = $('td.subject').map(function(i, e){
 	  var id = $(e).data('id');
 	  return $.post('/responses/',
@@ -16,32 +24,51 @@
 		     });
 		 })
       });
-      $.when.apply($, deferreds).then(function(){
-	  var p = {};
-	  var meeting_count = $('td.subject').size();
-	  console.log(meeting_count);
-	  var a = meeting_count > 1 ? _.map(Array.from(arguments), function(i){ return i[0] }) : [ arguments[0] ];
-	  // console.log(a);
+
+      var summarize = function(a){
+	  //---------------------------------------
+	  // reorganize responses by person
+	  //---------------------------------------
+	  var p = {}; 
 	  _.each(a, function(i){
 	      var id = i.id;
+	      // console.log(id);
 	      _.each(i.responses, function(r){
 		  p[r['t:Mailbox']['t:EmailAddress']] = p[r['t:Mailbox']['t:EmailAddress']] || { responses: { accept: [], decline: [], unknown: [], tentative: [] }, name: '' };
-		  p[r['t:Mailbox']['t:EmailAddress']]['responses'][r['t:ResponseType'].toLowerCase()].push(id);
+		  if (meeting_checked[id]) { p[r['t:Mailbox']['t:EmailAddress']]['responses'][r['t:ResponseType'].toLowerCase()].push(id) }
 		  p[r['t:Mailbox']['t:EmailAddress']]['name'] = r['t:Mailbox']['t:Name'];
 	      });
 	  });
+	  
+	  //---------------------------------------
+	  // reorganize into array
+	  //---------------------------------------
 	  p = _.keys(p).map(function(i){ var o = p[i]; o['email'] = i; return o; });
 	  var people = {
 	      accept: p.filter(function(i) { return i.responses.accept.length > 0 }),
 	      tentative: p.filter(function(i) { return i.responses.tentative.length > 0 }),
-	      decline: p.filter(function(i) { return i.responses.length == meeting_count }),
+	      decline: p.filter(function(i) { return i.responses.decline.length == meeting_count }),
 	      unknown: p.filter(function(i) { return i.responses.unknown.length > 0 && i.responses.accept.length == 0  && i.responses.tentative.length == 0 })
 	  }
-	  _.each(_.keys(people), function(p){
-	      console.log(p);
-	      // $('div.' + p).html(_.map(people[p], function(i){ return i.name }).join('; '));
-	      $('div.' + p).html(_.chain(people[p]).map(function(i){ return i.name }).join('; ').value() || 'none' );
-	  })
+	  _.each(_.keys(people), function(p){ $('div.' + p).html(
+	      _.chain(people[p]).map(function(i){ return i.name }).join('; ').value() + "<p />Total : " + people[p].length
+		  || 'none' ) })
+      };
+
+      var a;
+      $.when.apply($, deferreds).then(function(){
+	  a = meeting_count > 1 ? _.map(Array.from(arguments), function(i){ return i[0] }) : [ arguments[0] ];
+	  summarize(a)
+      })
+
+      $('.meeting_check').change(function(e){
+	  $('td.subject').map(function(i, e){ meeting_checked[$(e).data('id')] = $(e).parent().find("input:checked").length });
+	  summarize(a)
+      })
+      $('#check_all').change(function(){
+	  $('.meeting_check').prop( "checked", $('#check_all').prop('checked') );
+	  $('td.subject').map(function(i, e){ meeting_checked[$(e).data('id')] = $(e).parent().find("input:checked").length });
+	  summarize(a)
       })
   })
 </script>
@@ -64,7 +91,7 @@
 	  <td><i class="fa fa-question" aria-hidden="true"></i></td>
 	  <td><i class="fa fa-circle-o" aria-hidden="true"></i></td>
 	  % if (scalar @$meetings > 1) {
-	  <td><input type="checkbox" value=""></td>
+	  <td><input id="check_all" type="checkbox" checked value="on"></td>
 	  % }
 	  
 	  % for my $i (@$meetings) {
@@ -77,7 +104,7 @@
 	  <td class="tentative"></td>
 	  <td class="unknown"></td>
 	  % if (scalar @$meetings > 1) {
-	  <td><input type="checkbox" value=""></td>
+	  <td><input class="meeting_check" checked type="checkbox" value="on"></td>
 	  % }
 	</tr>
 	% }
