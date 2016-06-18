@@ -1,2 +1,3 @@
+https://github.com/ddollar/heroku-buildpack-apt.git
 https://github.com/mcolyer/heroku-buildpack-libxml2.git
-https://github.com/judofyr/perloku.git
+https://github.com/miyagawa/heroku-buildpack-perl.git
