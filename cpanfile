@@ -8,6 +8,7 @@ requires "Moose";
 requires "Moose::Role";
 requires "Sub::Exporter::ForMethods";
 requires 'Data::Dump';
+requires "Data::Section::Simple";
 
 
 requires "Plack";

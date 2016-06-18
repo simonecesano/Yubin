@@ -1,13 +1,21 @@
 package Yubin::UserAgent::EWS::Requests;
 use Moose::Role;
 
-use Sub::Exporter::ForMethods qw( method_installer );
-use Data::Section { installer => method_installer }, -setup;
+# use Sub::Exporter::ForMethods qw( method_installer );
+# use Data::Section { installer => method_installer }, -setup;
 
+use Data::Section::Simple qw(get_data_section);
+ 
 use Text::Xslate;
 use Path::Tiny;
 
 has 'tx' => ( is => 'ro', default => sub { Text::Xslate->new() } );
+
+sub data_section {
+    my $self = shift;
+    return get_data_section(shift);
+};
+
 
 sub compile {
     my ($self, $template, $data) = @_;
@@ -17,7 +25,7 @@ sub compile {
     } else {
 	print STDERR "#2 $template";
 	print STDERR "#p " . __PACKAGE__;
-	$template = ${__PACKAGE__->section_data($template)};
+	$template = $self->data_section($template);
 	print STDERR "#3 $template";
     };
     my $text = $self->tx->render_string($template, $data);
@@ -27,7 +35,7 @@ sub compile {
 1;
 
 __DATA__
-__[ get_manager ]__
+@@ get_manager
 <?xml version="1.0" encoding="utf-8"?>
 <soap:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	       xmlns:xsd="http://www.w3.org/2001/XMLSchema"
@@ -44,7 +52,7 @@ __[ get_manager ]__
     </ResolveNames>
   </soap:Body>
 </soap:Envelope>
-__[ get_manager_not_working ]__
+@@ get_manager_not_working
 <?xml version="1.0" encoding="UTF-8"?>
 <soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/"
                xmlns:t="http://schemas.microsoft.com/exchange/services/2006/types"
@@ -69,7 +77,7 @@ __[ get_manager_not_working ]__
     </m:FindItem>
    </soap:Body>
 </soap:Envelope>
-__[ resolve_name ]__
+@@ resolve_name
 <?xml version="1.0" encoding="utf-8"?>
 <soap:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	       xmlns:xsd="http://www.w3.org/2001/XMLSchema"
@@ -83,7 +91,7 @@ __[ resolve_name ]__
     </ResolveNames>
   </soap:Body>
 </soap:Envelope>
-__[ find_meeting ]__
+@@ find_meeting
 <?xml version="1.0" encoding="utf-8"?>
 <soap:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
        xmlns:m="http://schemas.microsoft.com/exchange/services/2006/messages" 
@@ -111,7 +119,7 @@ __[ find_meeting ]__
     </m:FindItem>
   </soap:Body>
 </soap:Envelope>
-__[ get_meeting_responses ]__
+@@ get_meeting_responses
 <?xml version="1.0" encoding="utf-8"?>
 <soap:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
                xmlns:m="http://schemas.microsoft.com/exchange/services/2006/messages" 
@@ -128,7 +136,7 @@ __[ get_meeting_responses ]__
       </m:GetItem>
    </soap:Body>
 </soap:Envelope>
-__[ send_mail ]__
+@@ send_mail
 <soap:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
                xmlns:m="http://schemas.microsoft.com/exchange/services/2006/messages" 
                xmlns:t="http://schemas.microsoft.com/exchange/services/2006/types" 
@@ -159,7 +167,7 @@ __[ send_mail ]__
     </m:CreateItem>
   </soap:Body>
 </soap:Envelope>
-__[ get_item ]__
+@@ get_item
 <?xml version="1.0" encoding="utf-8"?>
 <soap:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
                xmlns:m="http://schemas.microsoft.com/exchange/services/2006/messages" 
