@@ -33,3 +33,4 @@ requires "Authen::NTLM";
 requires "HTTP::Request";
 requires "Want";
 
+requires "Text::Xslate";
