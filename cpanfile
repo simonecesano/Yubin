@@ -32,6 +32,7 @@ requires "JSON";
 requires "XML::LibXML";
 requires "XML::Bare";
 requires "LWP::UserAgent";
+requires "LWP::Protocol::https";
 requires "Authen::NTLM";
 requires "HTTP::Request";
 requires "Want";
