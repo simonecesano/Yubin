@@ -13,7 +13,9 @@ has 'tx' => ( is => 'ro', default => sub { Text::Xslate->new() } );
 
 sub data_section {
     my $self = shift;
-    return get_data_section(shift);
+    my $template = shift;
+    # print STDERR '-' x 80;
+    return get_data_section($template);
 };
 
 
@@ -23,8 +25,6 @@ sub compile {
     if (-f $template) {
 	$template = path($template)->slurp
     } else {
-	# print STDERR "#2 $template";
-	# print STDERR "#p " . __PACKAGE__;
 	$template = $self->data_section($template);
 	# print STDERR "#3 $template";
     };
@@ -190,4 +190,44 @@ __DATA__
     </m:GetItem>
   </soap:Body>
 </soap:Envelope>
+@@ autodiscover
+<?xml version="1.0" encoding="utf-8"?>
+<soap:Envelope xmlns:a="http://schemas.microsoft.com/exchange/2010/Autodiscover" 
+        xmlns:wsa="http://www.w3.org/2005/08/addressing" 
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+        xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
+  <soap:Header>
+    <a:RequestedServerVersion>Exchange2010</a:RequestedServerVersion>
+    <wsa:Action>http://schemas.microsoft.com/exchange/2010/Autodiscover/Autodiscover/GetUserSettings</wsa:Action>
+    <wsa:To>https://autodiscover.adidas-group.com/autodiscover/autodiscover.svc</wsa:To>
+  </soap:Header>
+  <soap:Body>
+    <a:GetUserSettingsRequestMessage xmlns:a="http://schemas.microsoft.com/exchange/2010/Autodiscover">
+      <a:Request>
+        <a:Users>
+          <a:User>
+            <a:Mailbox><: $email :></a:Mailbox>
+          </a:User>
+        </a:Users>
+        <a:RequestedSettings>
+          <a:Setting>UserDisplayName</a:Setting>
+          <a:Setting>UserDN</a:Setting>
+          <a:Setting>UserDeploymentId</a:Setting>
+          <a:Setting>InternalMailboxServer</a:Setting>
+          <a:Setting>MailboxDN</a:Setting>
+          <a:Setting>PublicFolderServer</a:Setting>
+          <a:Setting>ActiveDirectoryServer</a:Setting>
+          <a:Setting>ExternalMailboxServer</a:Setting>
+          <a:Setting>EcpDeliveryReportUrlFragment</a:Setting>
+          <a:Setting>EcpPublishingUrlFragment</a:Setting>
+          <a:Setting>EcpTextMessagingUrlFragment</a:Setting>
+          <a:Setting>ExternalEwsUrl</a:Setting>
+          <a:Setting>CasVersion</a:Setting>
+          <a:Setting>EwsSupportedSchemas</a:Setting>
+        </a:RequestedSettings>
+      </a:Request>
+    </a:GetUserSettingsRequestMessage>
+  </soap:Body>
+</soap:Envelope>    
 
+    

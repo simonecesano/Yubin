@@ -46,7 +46,7 @@
 	  p = _.keys(p).map(function(i){ var o = p[i]; o['email'] = i; return o; });
 	  var people = {
 	      accept: p.filter(function(i) { return i.responses.accept.length > 0 }),
-	      tentative: p.filter(function(i) { return i.responses.tentative.length > 0 }),
+	      tentative: p.filter(function(i) { return i.responses.tentative.length > 0 && i.responses.accept.length == 0 }),
 	      decline: p.filter(function(i) { return i.responses.decline.length == meeting_count }),
 	      unknown: p.filter(function(i) { return i.responses.unknown.length > 0 && i.responses.accept.length == 0  && i.responses.tentative.length == 0 })
 	  }
