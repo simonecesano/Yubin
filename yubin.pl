@@ -12,7 +12,6 @@ plugin 'ACME';
 app->hook(around_action =>
 	  sub {
 	      my ($next, $c, $action, $last) = @_;
-	      app->log->info('HERE');
 	      return $next->();
 	  });
 
@@ -37,6 +36,7 @@ get '/' => sub {
 
 my $item = sub {
     my $c = shift;
+    my ($user, $pass) = ($c->session('user'), $c->session('password'));
     my $y = Yubin::UserAgent::EWS->new(user => $user, password => $pass, endpoint => 'https://ews.adidas-group.com/ews/exchange.asmx');
     app->log->info($c->param('item'));
     my $id = $c->param('item');
@@ -87,6 +87,11 @@ get '/logout' => sub {
 get '/u/:user/prefs' => sub {
     my $c = shift;
     $c->render(text => '/u/:user/prefs');
+};
+
+any '/static/*file' => sub {
+    my $c = shift;
+    $c->reply->static($c->param('file'));
 };
 
 app->start;

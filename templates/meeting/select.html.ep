@@ -3,6 +3,7 @@
   $(function(){
       var meeting_checked = {};
       var meeting_count = $('td.subject').size();
+      var m = new Meeting;
 
       $('td.subject').map(function(i, e){
 	  var id = $(e).data('id');
@@ -15,13 +16,14 @@
 	  return $.post('/responses/',
 		 { 'item': id },
 		 function(d){
-		     d = _.chain(d.responses)
-		     // summary output to page
-		     $(e).parent().find('.invited').html(d.size().value());
+		     m.add(d);
+		     var summary = m.summary(d.id);
+		     // console.log(_.keys(m.byPerson(d.id)).length)
+		     var t = 0;
 		     _(['accept', 'decline', 'unknown', 'tentative']).each(function(s){
-			 var c = d.filter(function(i) { return i['t:ResponseType'].toLowerCase() == s; }).size().value();
-			 $(e).parent().find('td.' + s.toLowerCase()).html(c);
+			 $(e).parent().find('td.' + s).html(summary[s].length);
 		     });
+		     $(e).parent().find('.invited').html(summary['total']);
 		 })
       });
 
