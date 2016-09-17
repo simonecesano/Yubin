@@ -12,15 +12,13 @@ with qw/Yubin::UserAgent::EWS::XPath/;
 has response => (
 		 is => 'ro',
 		 isa => 'HTTP::Response',
-		 handles => [qw/is_success/]
+		 handles => [qw/is_success status_line code/]
 		);
 
 
 sub xml {
     my $self = shift;
-    if ($self->response->is_success) {
-	return $self->response->decoded_content;
-    } 
+    return $self->response->decoded_content;
 }
 
 sub json {
@@ -28,7 +26,10 @@ sub json {
     if ($self->response->is_success) {
 	return xmlin($self->response->decoded_content);
     } else {
-	return {};
+	return {
+		code => $self->response->code,
+		ews_message => $self->response->message
+	       };
     }
 }
 

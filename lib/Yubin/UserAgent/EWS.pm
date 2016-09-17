@@ -15,7 +15,6 @@ use Yubin::UserAgent::EWS::Response;
 
 sub request {
     my ($self, $template, $data) = @_;
-    local $\ = "\n";
     my $res = $self->post($self->compile($template, $data));
     return Yubin::UserAgent::EWS::Response->new({ response => $res });
 }

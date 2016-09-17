@@ -47,35 +47,13 @@ __DATA__
   <soap:Body>
     <ResolveNames xmlns="http://schemas.microsoft.com/exchange/services/2006/messages"
                   xmlns:t="http://schemas.microsoft.com/exchange/services/2006/types"
-		  ReturnFullContactData="true" SearchScope="ActiveDirectory" ContactDataShape="AllProperties">
+		  ReturnFullContactData="true"
+		  SearchScope="ActiveDirectory"
+		  ContactDataShape="AllProperties"
+		  >
       <UnresolvedEntry><: $name :></UnresolvedEntry>
     </ResolveNames>
   </soap:Body>
-</soap:Envelope>
-@@ get_manager_not_working
-<?xml version="1.0" encoding="UTF-8"?>
-<soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/"
-               xmlns:t="http://schemas.microsoft.com/exchange/services/2006/types"
-               xmlns:m="http://schemas.microsoft.com/exchange/services/2006/messages">
-   <soap:Header>
-    <t:RequestServerVersion Version="Exchange2013" />
-   </soap:Header>
-   <soap:Body >
-    <m:FindItem  Traversal="Shallow">
-      <m:ItemShape>
-        <t:BaseShape>IdOnly</t:BaseShape>
-      </m:ItemShape>
-      <m:Restriction>
-	<t:Contains ContainmentMode="Substring" ContainmentComparison="IgnoreCase">
-	  <t:FieldURI FieldURI="contacts:Manager" />
-	  <t:Constant Value="gaudio" />
-	</t:Contains>
-      </m:Restriction>
-      <m:ParentFolderIds>
-        <t:DistinguishedFolderId Id="directory"/>
-      </m:ParentFolderIds>
-    </m:FindItem>
-   </soap:Body>
 </soap:Envelope>
 @@ resolve_name
 <?xml version="1.0" encoding="utf-8"?>
@@ -83,9 +61,13 @@ __DATA__
 	       xmlns:xsd="http://www.w3.org/2001/XMLSchema"
 	       xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/"
                xmlns:t="http://schemas.microsoft.com/exchange/services/2006/types">
+  <soap:Header>
+    <t:RequestServerVersion Version="Exchange2013_SP1" />
+  </soap:Header>
   <soap:Body>
     <ResolveNames xmlns="http://schemas.microsoft.com/exchange/services/2006/messages"
                   xmlns:t="http://schemas.microsoft.com/exchange/services/2006/types"
+		  SearchScope="ActiveDirectory"
                   ReturnFullContactData="true">
       <UnresolvedEntry><: $name :></UnresolvedEntry>
     </ResolveNames>
@@ -152,7 +134,7 @@ __DATA__
           <t:Body BodyType="HTML"><: $body :></t:Body>
           <t:ToRecipients>
 	  : for $to -> $item {
-	  <t:Mailbox><t:EmailAddress><:$item.email:></t:EmailAddress></t:Mailbox>
+	  <t:Mailbox><t:EmailAddress><: $item.email:></t:EmailAddress></t:Mailbox>
 	  : }
           </t:ToRecipients>
 	  : if $cc != nil {
@@ -229,5 +211,79 @@ __DATA__
     </a:GetUserSettingsRequestMessage>
   </soap:Body>
 </soap:Envelope>    
-
-    
+@@ freebusy
+<?xml version="1.0" encoding="utf-8"?>
+  <soap:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:m="http://schemas.microsoft.com/exchange/services/2006/messages" xmlns:t="http://schemas.microsoft.com/exchange/services/2006/types" xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
+    <soap:Header>
+      <t:RequestServerVersion Version="Exchange2010_SP1" />
+      <t:TimeZoneContext>
+	<t:TimeZoneDefinition Name="(UTC+01:00) Belgrade, Bratislava, Budapest, Ljubljana, Prague" Id="Central Europe Standard Time">
+	  <t:Periods>
+	    <t:Period Bias="-PT1H" Name="Standard" Id="trule:Microsoft/Registry/Central Europe Standard Time/1-Standard" />
+	    <t:Period Bias="-PT2H" Name="Daylight" Id="trule:Microsoft/Registry/Central Europe Standard Time/1-Daylight" />
+	  </t:Periods>
+	  <t:TransitionsGroups>
+	    <t:TransitionsGroup Id="0">
+	      <t:RecurringDayTransition>
+		<t:To Kind="Period">trule:Microsoft/Registry/Central Europe Standard Time/1-Daylight</t:To>
+		<t:TimeOffset>PT2H</t:TimeOffset>
+		<t:Month>3</t:Month>
+		<t:DayOfWeek>Sunday</t:DayOfWeek>
+		<t:Occurrence>-1</t:Occurrence>
+	      </t:RecurringDayTransition>
+	      <t:RecurringDayTransition>
+		<t:To Kind="Period">trule:Microsoft/Registry/Central Europe Standard Time/1-Standard</t:To>
+		<t:TimeOffset>PT3H</t:TimeOffset>
+		<t:Month>10</t:Month>
+		<t:DayOfWeek>Sunday</t:DayOfWeek>
+		<t:Occurrence>-1</t:Occurrence>
+	      </t:RecurringDayTransition>
+	    </t:TransitionsGroup>
+	  </t:TransitionsGroups>
+	  <t:Transitions>
+	    <t:Transition>
+	      <t:To Kind="Group">0</t:To>
+	    </t:Transition>
+	  </t:Transitions>
+	</t:TimeZoneDefinition>
+      </t:TimeZoneContext>
+    </soap:Header>
+    <soap:Body>
+      <m:GetUserAvailabilityRequest>
+        <m:MailboxDataArray>
+          <t:MailboxData>
+            <t:Email>
+              <t:Address><: $email :></t:Address>
+            </t:Email>
+            <t:AttendeeType>Required</t:AttendeeType>
+            <t:ExcludeConflicts>false</t:ExcludeConflicts>
+          </t:MailboxData>
+        </m:MailboxDataArray>
+        <t:FreeBusyViewOptions>
+          <t:TimeWindow>
+            <t:StartTime><: $start :></t:StartTime>
+            <t:EndTime><: $end :></t:EndTime>
+          </t:TimeWindow>
+          <t:MergedFreeBusyIntervalInMinutes>30</t:MergedFreeBusyIntervalInMinutes>
+          <t:RequestedView>DetailedMerged</t:RequestedView>
+        </t:FreeBusyViewOptions>
+      </m:GetUserAvailabilityRequest>
+    </soap:Body>
+  </soap:Envelope>    
+@@ get_timezone
+<?xml version="1.0" encoding="utf-8"?>
+<soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/"
+               xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+               xmlns:m="http://schemas.microsoft.com/exchange/services/2006/messages"
+               xmlns:t="http://schemas.microsoft.com/exchange/services/2006/types">
+  <soap:Header>
+    <t:RequestServerVersion Version="Exchange2010"/>
+  </soap:Header>
+  <soap:Body>
+    <m:GetServerTimeZones ReturnFullTimeZoneData="true">
+      <m:Ids>
+        <t:Id><: $zone :></t:Id>
+      </m:Ids>
+    </m:GetServerTimeZones>
+  </soap:Body>
+</soap:Envelope>
