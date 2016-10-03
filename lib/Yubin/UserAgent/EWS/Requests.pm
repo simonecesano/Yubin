@@ -287,3 +287,54 @@ __DATA__
     </m:GetServerTimeZones>
   </soap:Body>
 </soap:Envelope>
+@@ get_calendar_id
+<?xml version="1.0" encoding="utf-8"?>
+<soap:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	       xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+	       xmlns:m="http://schemas.microsoft.com/exchange/services/2006/messages"
+	       xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/"
+               xmlns:t="http://schemas.microsoft.com/exchange/services/2006/types">
+  <soap:Header>
+    <t:RequestServerVersion Version="Exchange2013_SP1" />
+  </soap:Header>
+  <soap:Body>
+    <m:GetFolder>
+      <m:FolderShape>
+        <t:BaseShape>IdOnly</t:BaseShape>
+      </m:FolderShape>
+      <m:FolderIds>
+        <t:DistinguishedFolderId Id="calendar" />
+      </m:FolderIds>
+    </m:GetFolder>
+  </soap:Body>
+</soap:Envelope>
+@@ get_calendar
+<?xml version="1.0" encoding="utf-8"?>
+<soap:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+       xmlns:m="http://schemas.microsoft.com/exchange/services/2006/messages" 
+       xmlns:t="http://schemas.microsoft.com/exchange/services/2006/types" 
+       xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
+  <soap:Header>
+    <t:RequestServerVersion Version="Exchange2007_SP1" />
+  </soap:Header>
+  <soap:Body>
+    <m:FindItem Traversal="Shallow">
+      <m:ItemShape>
+        <t:BaseShape>IdOnly</t:BaseShape>
+        <t:AdditionalProperties>
+          <t:FieldURI FieldURI="item:Subject" />
+          <t:FieldURI FieldURI="calendar:Start" />
+          <t:FieldURI FieldURI="calendar:End" />
+	  <t:FieldURI FieldURI="calendar:TimeZone" />
+	  <t:FieldURI FieldURI="calendar:Location" />
+	  <t:FieldURI FieldURI="calendar:IsAllDayEvent" />
+	  <t:FieldURI FieldURI="calendar:IsRecurring" />
+        </t:AdditionalProperties>
+      </m:ItemShape>
+      <m:CalendarView MaxEntriesReturned="10000" StartDate="<: $start :>" EndDate="<: $end :>" />
+      <m:ParentFolderIds>
+        <t:FolderId Id="<: $id :>" ChangeKey="<: $changekey :>" />
+      </m:ParentFolderIds>
+    </m:FindItem>
+  </soap:Body>
+</soap:Envelope>
